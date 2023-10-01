@@ -8,13 +8,13 @@ const { authenticateJwt } = require('../middleware/auth')
 
 router.post("/login", async (req, res) => {
     const { email, password } = req.body
-    const Admin = await User.findOne({
+    const UserFind = await User.findOne({
         where: {
             email: email,
             password: password
         }
     })
-    if (Admin) {
+    if (UserFind) {
         const token = jwt.sign({ email, role: "User" }, SECRET, {
             expiresIn: '1h'
         })
