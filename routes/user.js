@@ -1,6 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const { SECRET } = require('../middleware/auth');
+const jwt = require("jsonwebtoken");
+const { authenticateJwt } = require('../middleware/auth')
+
+
+router.post("/login", async (req, res) => {
+    const { email, password } = req.body
+    const Admin = await User.findOne({
+        where: {
+            email: email,
+            password: password
+        }
+    })
+    if (Admin) {
+        const token = jwt.sign({ email, role: "User" }, SECRET, {
+            expiresIn: '1h'
+        })
+        res.json({ message: 'User Succesfully SignedIn', token })
+    } else {
+        res.status(403).json({ message: "Invalid username or password" })
+    }
+})
 
 router.post('/insert', async (req, res) => {
     try {
@@ -70,10 +92,14 @@ router.get("/image/", async (req, res) => {
     }
 })
 
-router.put("/update", async (req, res) => {
+router.put("/update", authenticateJwt, async (req, res) => {
     try {
-        const { id, username, email, password, image, total_orders } = req.body;
-        const userToUpdate = await User.findByPk(id);
+        const { username, email, password, image, total_orders } = req.body;
+        const userToUpdate = await User.findOne({
+            where: {
+                email: req.data.email
+            }
+        });
         if (!userToUpdate) {
             return res.status(404).json({ message: "User not found" });
         }
