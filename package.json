@@ -9,6 +9,7 @@
     "node-sequalize-template": "^1.0.0",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1",
+    "sqlite3": "^5.1.6",
     "uuid": "^9.0.1"
   },
   "name": "quadb_nodejs",

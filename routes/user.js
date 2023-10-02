@@ -59,7 +59,7 @@ router.delete("/delete/:id", async (req, res) => {
     }
 });
 
-router.get("/details", async (req, res) => {
+router.get("/details/", async (req, res) => {
     try {
         let data = await User.findAll()
         if (!data) {
@@ -67,7 +67,24 @@ router.get("/details", async (req, res) => {
         }
         res.json({ UsersData: data })
     } catch (err) {
-        res.json("Not working")
+        res.json({ message: "Not working" })
+        throw new Error(err)
+    }
+})
+router.get("/details/:id", async (req, res) => {
+    try {
+        let data = await User.findAll({
+            where: {
+                id: req.params.id
+            }
+        })
+        if (data.length == 0) {
+            res.status(403).json({ message: "There are no records in the database" })
+        } else {
+            res.json(data)
+        }
+    } catch (err) {
+        res.json({ message: "Not working" })
         throw new Error(err)
     }
 })
